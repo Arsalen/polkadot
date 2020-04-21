@@ -38,7 +38,7 @@ docker-compose -f docker-compose.yml -f docker-compose.telemetry.backend.yml -f 
 ```
 Then connect to ```http://localhost```
 
-Note: In order to be able to deploy your network on a swarm service, you need to set the ```dev_net``` driver to support overlay networks.
+In order to be able to deploy your network on a swarm service, you need to set the ```dev_net``` driver to support overlay networks.
 
 **NOTICE:** If you are interested in provisioning and deployment of a Substrate local network using `ansible`, please check this role: [arsalen.substrate](https://github.com/Arsalen/substrate)
 
