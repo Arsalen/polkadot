@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  telemetry_backend:
+    ports:
+      - "8000:8000"
+    image: chevdor/substrate-telemetry-backend:${CHEVDOR_TELEMETRY_FRONTEND_VERSION}
+    volumes:
+      - "telemetry_backend_data:/data"
+    command: --listen 0.0.0.0:8000
+    networks:
+      dev_net:
+        ipv4_address: 172.36.1.10
+
+volumes:
+  telemetry_backend_data:

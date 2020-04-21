@@ -1,0 +1,55 @@
+version: '3.1'
+services:
+  ferdie:
+    user: root
+    ports:
+      - "30338:30338"
+      - "9938:9938"
+      - "9949:9949"
+    image: chevdor/polkadot:${CHEVDOR_POLKADOT_VERSION}
+    environment:
+      - ALICE_PEER=${ALICE_PEER_ADDRESS}
+      - BOB_PEER=${BOB_PEER_ADDRESS}
+      - CHARLIE_PEER=${CHARLIE_PEER_ADDRESS}
+      - DAVE_PEER=${DAVE_PEER_ADDRESS}
+      - EVE_PEER=${EVE_PEER_ADDRESS}
+    volumes:
+      - "ferdie_data:/data"
+    depends_on:
+      - telemetry_backend
+      - alice
+      - bob
+      - charlie
+      - dave
+      - eve
+    command: [
+      "sh",
+      "-c",
+      "polkadot --chain dev \
+          --ferdie \
+          -d /data \
+          --node-key-file /run/secrets/ferdie_key \
+          --node-key-type ed25519 \
+          --port 30338 \
+          --rpc-port 9938 \
+          --ws-port 9949 \
+          --bootnodes \
+              /ip4/172.36.1.12/tcp/30333/p2p/$${ALICE_PEER} \
+              /ip4/172.36.1.13/tcp/30344/p2p/$${BOB_PEER} \
+              /ip4/172.36.1.14/tcp/30355/p2p/$${CHARLIE_PEER} \
+              /ip4/172.36.1.15/tcp/30366/p2p/$${DAVE_PEER} \
+              /ip4/172.36.1.16/tcp/30377/p2p/$${EVE_PEER}
+          --telemetry-url 'ws://172.36.1.10:8000/submit 1'"
+    ]
+    networks:
+      dev_net:
+        ipv4_address: 172.36.1.17
+    secrets:
+      - ferdie_key
+
+volumes:
+  ferdie_data:
+
+secrets:
+  ferdie_key:
+    file: secrets/ferdie.key

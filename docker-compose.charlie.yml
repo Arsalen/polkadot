@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  charlie:
+    user: root
+    ports:
+      - "30335:30335"
+      - "9935:9935"
+      - "9946:9946"
+    image: chevdor/polkadot:${CHEVDOR_POLKADOT_VERSION}
+    environment:
+      - ALICE_PEER=${ALICE_PEER_ADDRESS}
+      - BOB_PEER=${BOB_PEER_ADDRESS}
+    volumes:
+      - "charlie_data:/data"
+    depends_on:
+      - telemetry_backend
+      - alice
+      - bob
+    command: [
+      "sh",
+      "-c",
+      "polkadot --chain dev \
+          --charlie \
+          -d /data \
+          --node-key-file /run/secrets/charlie_key \
+          --node-key-type ed25519 \
+          --port 30335 \
+          --rpc-port 9935 \
+          --ws-port 9946 \
+          --bootnodes \
+              /ip4/172.36.1.12/tcp/30333/p2p/$${ALICE_PEER} \
+              /ip4/172.36.1.13/tcp/30344/p2p/$${BOB_PEER} \
+          --telemetry-url 'ws://172.36.1.10:8000/submit 1'"
+    ]
+    networks:
+      dev_net:
+        ipv4_address: 172.36.1.14
+    secrets:
+      - charlie_key
+
+volumes:
+  charlie_data:
+
+secrets:
+  charlie_key:
+    file: secrets/charlie.key

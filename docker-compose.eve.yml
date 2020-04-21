@@ -1,0 +1,52 @@
+version: '3.1'
+services:
+  eve:
+    user: root
+    ports:
+      - "30337:30337"
+      - "9937:9937"
+      - "9948:9948"
+    image: chevdor/polkadot:${CHEVDOR_POLKADOT_VERSION}
+    environment:
+      - ALICE_PEER=${ALICE_PEER_ADDRESS}
+      - BOB_PEER=${BOB_PEER_ADDRESS}
+      - CHARLIE_PEER=${CHARLIE_PEER_ADDRESS}
+      - DAVE_PEER=${DAVE_PEER_ADDRESS}
+    volumes:
+      - "eve_data:/data"
+    depends_on:
+      - telemetry_backend
+      - alice
+      - bob
+      - charlie
+      - dave
+    command: [
+      "sh",
+      "-c",
+      "polkadot --chain dev \
+          --eve \
+          -d /data \
+          --node-key-file /run/secrets/eve_key \
+          --node-key-type ed25519 \
+          --port 30337 \
+          --rpc-port 9937 \
+          --ws-port 9948 \
+          --bootnodes \
+              /ip4/172.36.1.12/tcp/30333/p2p/$${ALICE_PEER} \
+              /ip4/172.36.1.13/tcp/30344/p2p/$${BOB_PEER} \
+              /ip4/172.36.1.14/tcp/30355/p2p/$${CHARLIE_PEER} \
+              /ip4/172.36.1.15/tcp/30366/p2p/$${DAVE_PEER}
+          --telemetry-url 'ws://172.36.1.10:8000/submit 1'"
+    ]
+    networks:
+      dev_net:
+        ipv4_address: 172.36.1.16
+    secrets:
+      - eve_key
+
+volumes:
+  eve_data:
+
+secrets:
+  eve_key:
+    file: secrets/eve.key

@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  alice:
+    user: root
+    ports:
+      - "30333:30333"
+      - "9933:9933"
+      - "9944:9944"
+    image: chevdor/polkadot:${CHEVDOR_POLKADOT_VERSION}
+    volumes:
+      - "alice_data:/data"
+    depends_on:
+      - telemetry_backend
+    command: [
+      "sh",
+      "-c",
+      "polkadot --chain dev \
+          --alice \
+          -d /data \
+          --node-key-file /run/secrets/alice_key \
+          --node-key-type ed25519 \
+          --telemetry-url 'ws://172.36.1.10:8000/submit 1'"
+    ]
+    networks:
+      dev_net:
+        ipv4_address: 172.36.1.12
+    secrets:
+      - alice_key
+
+volumes:
+  alice_data:
+
+secrets:
+  alice_key:
+    file: secrets/alice.key
