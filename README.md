@@ -40,6 +40,11 @@ Then connect to ```http://localhost```
 
 Note: In order to be able to deploy your network on a swarm service, you need to set the ```dev_net``` driver to support overlay networks.
 
+License
+-------
+
+MIT
+
 References
 ------------------
 
